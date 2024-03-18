@@ -3,6 +3,7 @@ use std::{fs::File, io::{self, BufRead, BufReader}};
 use once_cell::sync::Lazy;
 
 fn main() -> io::Result<()> {
+    // trailing question mark returns early if there's an error
     run_calibration("example 1", "day1example1.txt", SIMPLE_DIGITS.as_ref())?;
     run_calibration("example 2", "day1example2.txt", ALL_DIGITS.as_ref())?;
     run_calibration("part 1", "day1input.txt", SIMPLE_DIGITS.as_ref())?;
@@ -12,6 +13,8 @@ fn main() -> io::Result<()> {
 fn run_calibration(label: &str, file_name: &str, digits: &[String]) -> io::Result<()> {
     let file = File::open("data/".to_string() + file_name)?;
     let lines = BufReader::new(file).lines();
+    // ok() converts potential IO errors into Options
+    // and_then (flatmap) allows us to continue processing successfully read lines
     let result = lines
         .filter_map(|l| l.ok().and_then(|l| calibrate_line(l.as_str(), digits)))
         .sum::<usize>();
@@ -28,6 +31,8 @@ fn digit_to_int(digit: &str) -> Option<usize> {
 }
 
 fn calibrate_line(line: &str, digits: &[String]) -> Option<usize> {
+    // filter_map retains only the successful results of finding a digit on a line
+    // the Option monad handles any early returns
     let first = digits
         .iter()
         .filter_map(|d| line.find(d).map(|i| (d, i)))
@@ -44,7 +49,6 @@ fn calibrate_line(line: &str, digits: &[String]) -> Option<usize> {
 static SIMPLE_DIGITS: Lazy<Vec<String>> = Lazy::new(|| {
     (0 .. 10).map(|x| x.to_string()).collect() 
 });
-
 
 static WORD_DIGITS: Lazy<Vec<String>> = Lazy::new(|| { 
     ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
