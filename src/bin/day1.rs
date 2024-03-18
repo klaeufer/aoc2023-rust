@@ -9,7 +9,7 @@ fn main() -> io::Result<()> {
     run_calibration("part 2", "day1input.txt", ALL_DIGITS.as_ref())
 }
 
-fn run_calibration(label: &str, file_name: &str, digits: &Vec<String>) -> io::Result<()> {
+fn run_calibration(label: &str, file_name: &str, digits: &[String]) -> io::Result<()> {
     let file = File::open("data/".to_string() + file_name)?;
     let lines = BufReader::new(file).lines();
     let result = lines
@@ -21,13 +21,13 @@ fn run_calibration(label: &str, file_name: &str, digits: &Vec<String>) -> io::Re
 
 fn digit_to_int(digit: &str) -> Option<usize> {
     if SIMPLE_DIGITS.contains(&digit.to_string()) {
-        return digit.parse::<usize>().ok();
+        digit.parse::<usize>().ok()
     } else {
-        return WORD_DIGITS.iter().position(|x| x == digit).map(|p| p + 1);
+        WORD_DIGITS.iter().position(|x| x == digit).map(|p| p + 1)
     }
 }
 
-fn calibrate_line(line: &str, digits: &Vec<String>) -> Option<usize> {
+fn calibrate_line(line: &str, digits: &[String]) -> Option<usize> {
     let first = digits
         .iter()
         .filter_map(|d| line.find(d).map(|i| (d, i)))
@@ -47,7 +47,7 @@ static SIMPLE_DIGITS: Lazy<Vec<String>> = Lazy::new(|| {
 
 
 static WORD_DIGITS: Lazy<Vec<String>> = Lazy::new(|| { 
-    vec!["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+    ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
     .iter()
     .map(|x| x.to_string())
     .collect() 
@@ -62,12 +62,12 @@ static ALL_DIGITS: Lazy<Vec<String>> = Lazy::new(|| {
 
 #[test]
 fn test_dti_3() { 
-    assert_eq!(digit_to_int("3"), 3);
+    assert_eq!(digit_to_int("3"), Some(3));
 }
 
 #[test]
 fn test_dti_three() { 
-    assert_eq!(digit_to_int("three"), 3);
+    assert_eq!(digit_to_int("three"), Some(3));
 }
 
 #[test]
