@@ -3,10 +3,10 @@ use std::{fs::File, io::{self, BufRead, BufReader}};
 use once_cell::sync::Lazy;
 
 fn main() -> io::Result<()> {
-    run_calibration("Day 1 example 1", "day1example1.txt", SIMPLE_DIGITS.as_ref())?;
-    run_calibration("Day 1 example 2", "day1example2.txt", ALL_DIGITS.as_ref())?;
-    run_calibration("Day 1 part 1", "day1input.txt", SIMPLE_DIGITS.as_ref())?;
-    run_calibration("Day 1 part 2", "day1input.txt", ALL_DIGITS.as_ref())
+    run_calibration("example 1", "day1example1.txt", SIMPLE_DIGITS.as_ref())?;
+    run_calibration("example 2", "day1example2.txt", ALL_DIGITS.as_ref())?;
+    run_calibration("part 1", "day1input.txt", SIMPLE_DIGITS.as_ref())?;
+    run_calibration("part 2", "day1input.txt", ALL_DIGITS.as_ref())
 }
 
 fn run_calibration(label: &str, file_name: &str, digits: &Vec<String>) -> io::Result<()> {
@@ -15,7 +15,7 @@ fn run_calibration(label: &str, file_name: &str, digits: &Vec<String>) -> io::Re
     let result = lines
         .filter_map(|l| l.ok().and_then(|l| calibrate_line(l.as_str(), digits)))
         .sum::<usize>();
-    println!("{} solution: {}", label, result);
+    println!("Day 1 {} solution: {}", label, result);
     Ok(())
 }
 
@@ -31,12 +31,12 @@ fn calibrate_line(line: &str, digits: &Vec<String>) -> Option<usize> {
     let first = digits
         .iter()
         .filter_map(|d| line.find(d).map(|i| (d, i)))
-        .min_by(|(_d, i), (_d2, i2)| i.cmp(i2))
-        .and_then(|(d, _i)| digit_to_int(d));
+        .min_by(|(_, i), (_, i2)| i.cmp(i2))
+        .and_then(|(d, _)| digit_to_int(d));
     let last = digits
         .iter()
         .filter_map(|d| line.rfind(d).map(|i| (d, i)))
-        .max_by(|(_d, i), (_d2, i2)| i.cmp(i2))
+        .max_by(|(_, i), (_, i2)| i.cmp(i2))
         .and_then(|(d, _i)| digit_to_int(d));
     first.and_then(|f| last.map(|l| f * 10 + l))
 }
