@@ -78,13 +78,15 @@ fn process(label: &str, input: &mut impl Iterator<Item = String>) {
     let seed_to_location = all_maps
         .into_iter()
         .rev()
-        .reduce(|f, g| Box::new(move |x| f(g(x)))).unwrap();
+        .reduce(|f, g| Box::new(move |x| f(g(x))))
+        .unwrap();
 
     // part 1: find the minimum location for the given seeds
     let part1 = seeds
         .iter()
         .map(|&x| seed_to_location(x))
-        .min().unwrap();
+        .min()
+        .unwrap();
     println!("{} part 1: {}", label, part1);
 
     // part 2: find the minimum location for the given seeds interpreted as ranges
@@ -96,6 +98,7 @@ fn process(label: &str, input: &mut impl Iterator<Item = String>) {
                 .min()
                 .unwrap()
         })
-        .min().unwrap();
+        .min()
+        .unwrap();
     println!("{} part 2: {}", label, part2);
 }
