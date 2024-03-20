@@ -4,25 +4,19 @@ use once_cell::sync::Lazy;
 
 fn main() -> io::Result<()> {
     // trailing question mark returns early if there's an error
-    run_calibration("example 1", "day1example1.txt", SIMPLE_DIGITS.as_ref())?;
-    run_calibration("example 2", "day1example2.txt", ALL_DIGITS.as_ref())?;
     run_calibration("part 1", "day1input.txt", SIMPLE_DIGITS.as_ref())?;
     run_calibration("part 2", "day1input.txt", ALL_DIGITS.as_ref())
 }
 
 fn run_calibration(label: &str, file_name: &str, digits: &[String]) -> io::Result<()> {
     let file = File::open("data/".to_string() + file_name)?;
-    let lines = BufReader::new(file).lines();
-    // ok() converts potential IO errors into Options
-    // and_then (flatmap) allows us to continue processing successfully read lines
-    let result = lines
-        .filter_map(|l| l.ok().and_then(|l| calibrate_line(l.as_str(), digits)))
-        .sum::<usize>();
-    println!("Day 1 {} solution: {}", label, result);
+    let lines = BufReader::new(file).lines().map(Result::unwrap).collect::<Vec<_>>();
+    println!("Day 1 {} solution: {}", label, calibrate_lines(&lines, digits));
     Ok(())
 }
 
 fn digit_to_int(digit: &str) -> Option<usize> {
+    // ok() converts potential parse errors into Options
     if SIMPLE_DIGITS.contains(&digit.to_string()) {
         digit.parse::<usize>().ok()
     } else {
@@ -30,9 +24,16 @@ fn digit_to_int(digit: &str) -> Option<usize> {
     }
 }
 
+fn calibrate_lines(lines: &[String], digits: &[String]) -> usize {
+    lines
+        .iter()
+        .filter_map(|l| calibrate_line(l, digits))
+        .sum::<usize>()
+}
+
 fn calibrate_line(line: &str, digits: &[String]) -> Option<usize> {
     // filter_map retains only the successful results of finding a digit on a line
-    // the Option monad handles any early returns
+    // the Option monad's and_then (flatmap) handles any early returns
     let first = digits
         .iter()
         .filter_map(|d| line.find(d).map(|i| (d, i)))
@@ -47,14 +48,13 @@ fn calibrate_line(line: &str, digits: &[String]) -> Option<usize> {
 }
 
 static SIMPLE_DIGITS: Lazy<Vec<String>> = Lazy::new(|| {
-    (0 .. 10).map(|x| x.to_string()).collect() 
+    (0 .. 10).map(|d| d.to_string()).collect::<Vec<_>>() 
 });
 
 static WORD_DIGITS: Lazy<Vec<String>> = Lazy::new(|| { 
     ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
-    .iter()
-    .map(|x| x.to_string())
-    .collect() 
+    .map(str::to_string)
+    .to_vec() 
 });
 
 static ALL_DIGITS: Lazy<Vec<String>> = Lazy::new(|| {
@@ -75,6 +75,36 @@ fn test_dti_three() {
 }
 
 #[test]
-fn test_calibrate_line() { 
+fn test_calibrate_line_simple() { 
+    assert_eq!(calibrate_line("123456789", &SIMPLE_DIGITS), Some(19));
+}
+
+#[test]
+fn test_calibrate_line_all() { 
     assert_eq!(calibrate_line("one two three four five six seven eight nine", &ALL_DIGITS), Some(19));
+}
+
+#[test]
+fn test_part_1() { 
+    let example = [
+        "1abc2",
+        "pqr3stu8vwx",
+        "a1b2c3d4e5f",
+        "treb7uchet",
+    ].map(str::to_string).to_vec();
+    assert_eq!(calibrate_lines(&example, &SIMPLE_DIGITS), 142);
+}
+
+#[test]
+fn test_part_2() { 
+    let example = [
+        "two1nine",
+        "eightwothree",
+        "abcone2threexyz",
+        "xtwone3four",
+        "4nineeightseven2",
+        "zoneight234",
+        "7pqrstsixteen",
+    ].map(str::to_string).to_vec();
+    assert_eq!(calibrate_lines(&example, &ALL_DIGITS), 281);
 }
