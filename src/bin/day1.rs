@@ -4,13 +4,16 @@ use once_cell::sync::Lazy;
 
 fn main() -> io::Result<()> {
     // trailing question mark returns early if there's an error
-    run_calibration("part 1", "day1input.txt", SIMPLE_DIGITS.as_ref())?;
-    run_calibration("part 2", "day1input.txt", ALL_DIGITS.as_ref())
+    run_calibration("part 1", "day1input.txt", &SIMPLE_DIGITS)?;
+    run_calibration("part 2", "day1input.txt", &ALL_DIGITS)
 }
 
 fn run_calibration(label: &str, file_name: &str, digits: &[String]) -> io::Result<()> {
     let file = File::open("data/".to_string() + file_name)?;
-    let lines = BufReader::new(file).lines().map(Result::unwrap).collect::<Vec<_>>();
+    let lines = BufReader::new(file)
+        .lines()
+        .filter_map(Result::ok)
+        .collect::<Vec<_>>();
     println!("Day 1 {} solution: {}", label, calibrate_lines(&lines, digits));
     Ok(())
 }
