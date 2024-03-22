@@ -10,7 +10,7 @@ fn main() -> io::Result<()> {
 
 fn run_calibration(label: &str, file_name: &str, digits: &[String]) -> io::Result<()> {
     let file = File::open("data/".to_string() + file_name)?;
-    let lines = BufReader::new(file).lines().map(Result::unwrap).collect::<Vec<_>>();
+    let lines = BufReader::new(file).lines().collect::<io::Result<Vec<String>>>()?;
     println!("Day 1 {} solution: {}", label, calibrate_lines(&lines, digits));
     Ok(())
 }
@@ -48,7 +48,7 @@ fn calibrate_line(line: &str, digits: &[String]) -> Option<usize> {
 }
 
 static SIMPLE_DIGITS: Lazy<Vec<String>> = Lazy::new(|| {
-    (0 .. 10).map(|d| d.to_string()).collect::<Vec<_>>() 
+    (0 .. 10).map(|d| d.to_string()).collect() 
 });
 
 static WORD_DIGITS: Lazy<Vec<String>> = Lazy::new(|| { 

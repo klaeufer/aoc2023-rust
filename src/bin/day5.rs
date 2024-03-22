@@ -1,16 +1,15 @@
 use std::{
     fs::File,
-    io::{BufRead, BufReader},
+    io::{self, BufRead, BufReader},
 };
 
 use log::info;
-use anyhow::Result; // simplified error handling
 use once_cell::sync::Lazy; // global constants
 use regex::Regex;
 
 static NUMBER: Lazy<Regex> = Lazy::new(|| Regex::new(r"(\d+)").unwrap());
 
-fn main() -> Result<()> {
+fn main() -> io::Result<()> {
     env_logger::init();
     let file = File::open("data/day5input.txt")?;
     let mut lines = BufReader::new(file)
