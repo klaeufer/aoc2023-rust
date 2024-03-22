@@ -10,7 +10,7 @@ fn main() -> io::Result<()> {
 
 fn run_calibration(label: &str, file_name: &str, digits: &[String]) -> io::Result<()> {
     let file = File::open("data/".to_string() + file_name)?;
-    let lines = BufReader::new(file).lines().collect::<io::Result<Vec<String>>>()?;
+    let lines = BufReader::new(file).lines().collect::<io::Result<Vec<_>>>()?;
     println!("Day 1 {} solution: {}", label, calibrate_lines(&lines, digits));
     Ok(())
 }
@@ -91,7 +91,7 @@ fn test_part_1() {
         "pqr3stu8vwx",
         "a1b2c3d4e5f",
         "treb7uchet",
-    ].map(str::to_string).to_vec();
+    ].map(str::to_string);
     assert_eq!(calibrate_lines(&example, &SIMPLE_DIGITS), 142);
 }
 
@@ -105,6 +105,6 @@ fn test_part_2() {
         "4nineeightseven2",
         "zoneight234",
         "7pqrstsixteen",
-    ].map(str::to_string).to_vec();
+    ].map(str::to_string);
     assert_eq!(calibrate_lines(&example, &ALL_DIGITS), 281);
 }
