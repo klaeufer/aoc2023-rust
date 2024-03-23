@@ -41,13 +41,13 @@ fn make_map(lines: &mut impl Iterator<Item = String>) -> Option<Box<dyn Fn(usize
         .take_while(|line| !line.trim().is_empty())
         .map(|line| {
             info!("line: {:?}", line);
-            let numbers: Vec<usize> = line
+            let numbers = line
                 .split_whitespace()
                 .filter_map(|word| word.parse::<usize>().ok())
-                .collect();
+                .collect::<Vec<_>>();
             (numbers[0], numbers[1], numbers[2])
         })
-        .collect::<Vec<(usize, usize, usize)>>();
+        .collect::<Vec<_>>();
     info!("ranges: {:?}", ranges);
 
     // represent as a function
