@@ -33,7 +33,7 @@ fn make_vec(lines: &mut impl Iterator<Item = String>) -> Vec<usize> {
 
 fn make_map(lines: &mut impl Iterator<Item = String>) -> Option<Box<dyn Fn(usize) -> usize>> {
     // skip section header, assuming it's always there
-    let header = lines.next()?; 
+    let header = lines.next()?;
     info!("section header: {:?}", header);
 
     // collect ranges (triplets) for this section
@@ -66,7 +66,7 @@ fn process(input: &mut impl Iterator<Item = String>) -> (usize, usize) {
     info!("seeds: {:?}", &seeds);
 
     // create all maps and collect them into a vector
-    let all_maps = 
+    let all_maps =
         std::iter::successors(make_map(input), |_| make_map(input))
         .collect::<Vec<_>>();
     info!("all_maps: {:?}", all_maps.len());
