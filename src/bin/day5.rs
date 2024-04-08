@@ -62,26 +62,20 @@ fn make_map(lines: &mut impl Iterator<Item = String>) -> Option<Box<dyn Fn(usize
 fn process(input: &mut impl Iterator<Item = String>) -> (usize, usize) {
     info!("process: start");
 
-    let seeds = make_vec(input);
-    info!("seeds: {:?}", &seeds);
+    let ref seeds = make_vec(input);
+    info!("seeds: {:?}", seeds);
 
     // create all maps and collect them into a vector
-    let all_maps =
+    // then compose into a single function
+    let seed_to_location =
         std::iter::successors(make_map(input), |_| make_map(input))
-        .collect::<Vec<_>>();
-    info!("all_maps: {:?}", all_maps.len());
-
-    // compose all maps into a single function
-    let seed_to_location = all_maps
-        .into_iter()
-        .rev()
-        .reduce(|f, g| Box::new(move |x| f(g(x))))
+        .reduce(|f, g| Box::new(move |x| g(f(x))))
         .unwrap();
 
     // part 1: find the minimum location for the given seeds
     let part1 = seeds
         .iter()
-        .map(|&s| seed_to_location(s)) // TODO make point-free
+        .map(|&s| seed_to_location(s))
         .min()
         .unwrap();
     info!("part 1: {}", part1);
@@ -99,7 +93,7 @@ fn process(input: &mut impl Iterator<Item = String>) -> (usize, usize) {
         .unwrap();
     info!("part 2: {}", part2);
 
-    (part1, part2) 
+    (part1, part2)
 }
 
 
